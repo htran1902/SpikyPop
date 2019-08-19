@@ -19,7 +19,7 @@ Simulating extracellular recordings of neuronal populations is a challenging tas
 
 It is recommended to run the different files under Ubuntu/Debian/MacOS - especially for the NEURON simulator and the LFPy Python-package.
 
-Step for reproducing EAPs from single neurons :
+*Step for reproducing EAPs from single neurons :
 
 1/ Modify the .hoc file to choose the neuron morphology.
 
@@ -27,7 +27,7 @@ Step for reproducing EAPs from single neurons :
 
 3/ Import the saved data in matlab and run the main file (don't forget to modify the morphology parameters to match with the ones of the .hoc file)
 
-Step for reproducing EAPs from neuronal population :
+*Step for reproducing EAPs from neuronal population :
 
 
 
