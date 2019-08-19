@@ -22,7 +22,9 @@ It is recommended to run the different files under Ubuntu/debian - especially fo
 There are three main steps to run the method for single neurons.
 
 1/ Modify the .hoc file to choose the neuron morphology.
+
 2/ Import the .hoc file in the LFPy python-package (for installation, see https://github.com/LFPy/LFPy) and save the different data (EAPs)
+
 3/ Import the saved data in matlab and run the main file.
 
 
