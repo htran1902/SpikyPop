@@ -16,8 +16,14 @@ Simulating extracellular recordings of neuronal populations is a challenging tas
  H. Tran, R. Ranta, S. Le Cam and V. Louis-Dorr. Simulating extracellular signatures of action potentials using single compartment neurons and geometrical filtering. In the 27th Computational Neuroscience (CNS), Seattle, USA, 2018.
  https://hal.archives-ouvertes.fr/hal-01917383
 
-# Installation 
+# User guide 
 
+It is recommended to run the different files under Ubuntu/debian - especially for the NEURON simulator and the LFPy Python-package.
+There are three main steps to run the method for single neurons.
+
+1/ Modify the .hoc file to choose the neuron morphology.
+2/ Import the .hoc file in the LFPy python-package (for installation, see https://github.com/LFPy/LFPy) and save the different data (EAPs)
+3/ Import the saved data in matlab and run the main file.
 
 
 
