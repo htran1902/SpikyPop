@@ -12,8 +12,18 @@ Simulating extracellular recordings of neuronal populations is a challenging tas
  H. Tran, S. Le Cam, R. Ranta and V. Louis-Dorr. Modelling and analysis of extracellular action potentials. In Journal of Computational Neuroscience, 2019. [under review]
  
  H. Tran, R. Ranta, S. Le Cam and V. Louis-Dorr. Extracellular recordings simulation : a time-efficient method to model action potentials signatures of neuronal populations. In the NeuroFrance, Marseille, France, 2019.
-  
+   
  H. Tran, R. Ranta, S. Le Cam and V. Louis-Dorr. Simulating extracellular signatures of action potentials using single compartment neurons and geometrical filtering. In the 27th Computational Neuroscience (CNS), Seattle, USA, 2018.
- 
+ https://hal.archives-ouvertes.fr/hal-01917383
 
 # Installation 
+
+
+
+
+
+
+
+The method was developed within the team of 'Neurosciences des systèmes et de la cognition' belonging to the CRAN - Centre of Research in Automatic of Nancy - Nancy, France.
+
+If you have any questions concerning the method, please send en email to harry.tran@univ-lorraine.fr
