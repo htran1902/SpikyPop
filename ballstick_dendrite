@@ -1,0 +1,26 @@
+create soma, axon, dend
+access soma
+
+  soma {
+      nseg = 1
+      diam = 25
+      L = 25
+      insert hh
+  }
+  
+    axon {
+        nseg = 100
+        diam = 2
+        L = 1000
+        insert hh
+  }
+  
+    dend {
+        nseg = 5
+        diam = 2
+        L = 200
+        insert pas
+  }
+  
+connect axon(0), soma(0)
+connect dend(0), soma(1)
