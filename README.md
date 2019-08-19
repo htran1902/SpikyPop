@@ -3,8 +3,7 @@
  
 Simulating extracellular recordings of neuronal populations is a challenging task to understand extracellular field potentials at different scales. Detailed neuronal compartmental models with active/passive compartments are generally used which could lead to a high computational burden. On the contrary, simplified models have already been proposed such as the dipolar model. The latter has been used but it is biophysically not very realistic. A compromise must be found between detailed compartment models and point or dipole models of neurons.
 
- 
- 
+ The simulator takes the form of a linear geometry based filter that can model the shape of EAPs by taking into account its generation in the cell body and its propagation along the axon. The method is based on the convolution of the somatic membrane current given by the Hodgkin-Huxley dynamics and a geometrical filter taking into account the relative position of the electrode. 
  
  
  For more details, see :
@@ -29,9 +28,8 @@ There are three main steps to run the method for single neurons.
 
 
 
-
-
 #
+
 The method was developed within the team of 'Neurosciences des systèmes et de la cognition' belonging to the CRAN - Centre of Research in Automatic of Nancy - Nancy, France.
 
 If you have any questions concerning the method, please send en email to harry.tran@univ-lorraine.fr
