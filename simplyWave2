@@ -1,0 +1,19 @@
+function [Ve] = simplyWave2(Imem,c,morpho,t,hk,coef,dt,coef_soma)
+
+% Function which processes the EAP waveform for a specific electrode position (represented by the variable hk which the morphological filter)
+% with specific parameters (propagation speed 'c', soma dipole coefficient 'coef_soma')
+% created by harry tran
+
+tk=morpho.axon.x/c;
+Vea=zeros(size(t));
+Ves=Vea;
+
+for it=round(max(tk)/dt)+1:length(t)
+    Vea(it)=hk*Imem(it-round(tk/dt))'; % axonal contribution
+    Ves(it)=coef_soma*coef(1)./coef(3)*Imem(it)*coef(2); % soma contribution
+end
+
+Ve=Ves+Vea;
+
+end
+
