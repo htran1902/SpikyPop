@@ -11,37 +11,36 @@ position_electrode(:,1) = - position_electrode(:,1);
 lfpy = importdata('NAME_DATA_SAVED.text');
 lfpy=lfpy';
 
-%%
+% -------------------------------------------------------
 clc
 D = sqrt(sum(position_electrode'.^2));
 D = D'; % distance from the soma;
 [~, idxMin] = min(D);
 
+% Run Hodgkin-Huxley dynamics
 hodgkin_huxley_dynamics
 
+% normalization with respect to the electrode closest to the soma
 lfpy_norm = lfpy-lfpy(:,1)*ones(1,size(lfpy,2));
 normtmp=sqrt(sum(lfpy_norm.^2,2));
 lfpy_norm=lfpy_norm/normtmp(idxMin); % normalize with the closest electrode idx from the soma
 
+% define the neuron morphology (Modification here according to the user)
 morpho.soma.radius = 12.5;     % um
 morpho.axon.cptLength = 13.3335; % um
 morpho.axon.radius = 1;        % um
 morpho.axon.surface = 2*pi*morpho.axon.radius*morpho.axon.cptLength ; % um2
 morpho.axon.length = 1000;     % um
-morpho.axon.x = [morpho.soma.radius + morpho.axon.cptLength/2:morpho.axon.cptLength:morpho.axon.length + morpho.soma.radius];
+morpho.axon.x = [morpho.soma.radius + morpho.axon.cptLength/2:morpho.axon.cptLength:morpho.axon.length + morpho.soma.radius]; % center of each 'compartment'
 morpho.axon.cptNumber = length(morpho.axon.x);
 morpho.soma.surface = 4*pi*morpho.soma.radius^2;
 
-%%
+% parameters defined
+c=440 ; % action potential speed propagation
+coef_soma = 1; % coefficient on the soma dipole
 
-c=446;
-coef_soma = 1;
 
-clc
-clear data_corr
-clear tmp correlation
-tic
-
+% Morphological filters parameterization -----------------
 hk2 = [];
 data_corr=cell(length(position_electrode),1);
 
@@ -61,6 +60,7 @@ for idx = 1:length(position_electrode)
     
 end
 
+% EAPs waveforms processing for each electrode / each speed (if several) / each soma dipole coefficient
 for idx_speed = 1:length(c)
     for idx_soma = 1:length(coef_soma)
         Ve=zeros(size(lfpy));
@@ -73,16 +73,12 @@ for idx_speed = 1:length(c)
         
         matrice_Ve{idx_speed,idx_soma} = Ve;
         normmax=normVe(4);
-        Ve=Ve/normmax;
+        Ve=Ve/normmax; % Ve is the EAPs waveforms matrix
         
-        % ici checker correlation valeurs + sens des waveforms
-        % correlation
+        % correlation processing 
         tmp = corrcoef(-Ve,lfpy);
         correlation(idx_speed,idx_soma) = tmp(1,2);
         
-        % error processing
-        error(idx_speed,idx_soma) = norm(-Ve-lfpy_norm,'fro');
     end
     fprintf('Processed for speed %d  \n',c(idx_speed))
 end
-toc
