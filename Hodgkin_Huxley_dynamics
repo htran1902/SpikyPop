@@ -1,0 +1,28 @@
+dt = 0.001; % ms
+time_axis = [0:dt:100]; %ms
+Nt=2^15;
+D=Nt*dt;
+t=[dt:dt:D]-dt;
+n=length(t);
+
+fe=1/dt;
+f=0:fe/Nt:fe/2-fe/Nt;
+
+% I=2.5*(heaviside(t-5)-heaviside(t-30)); % uA/cm2 
+I = load('i_hhrun.mat');
+
+I = I.I;
+icur=1;
+[Vm,m,n,h,INa,IK,Il]=hhrun(I,t); % membrane potential (http://www.bem.fi/book/03/03.htm, 3.14)
+Vmem(icur,:)=Vm;
+INat(icur,:)=INa;
+IKa(icur,:)=IK;
+Ileak(icur,:)=Il;
+Imem=INa+IK+Il;     % uV / (ohm*cm2) = [uA / cm2] 
+
+[a,indexMax_mat] = max(Vm);
+begin_mat = indexMax_mat - 4*fe; 
+ends_mat = indexMax_mat + 6*fe ;  
+time_extraction_mat  = begin_mat:ends_mat;
+time_vm_mat = time_extraction_mat / fe ;
+
