@@ -130,7 +130,7 @@ stimulation = {
 },
 
 
-# meshgrid
+# Electrodes meshgrid
 hstep = np.array(range(250,-1251,-125))
 vstep = np.array(range(50,251,50))
 N = vstep.shape
