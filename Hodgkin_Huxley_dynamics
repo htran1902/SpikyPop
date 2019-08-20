@@ -8,8 +8,7 @@ n=length(t);
 fe=1/dt;
 f=0:fe/Nt:fe/2-fe/Nt;
 
-% I=2.5*(heaviside(t-5)-heaviside(t-30)); % uA/cm2 
-I = load('i_hhrun.mat');
+I=2.5*(heaviside(t-5)-heaviside(t-30)); % uA/cm2 / Stimulation current
 
 I = I.I;
 icur=1;
