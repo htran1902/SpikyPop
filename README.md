@@ -8,7 +8,7 @@ Simulating extracellular recordings of neuronal populations is a challenging tas
  
  For more details, see :
  
- H. Tran, S. Le Cam, R. Ranta and V. Louis-Dorr. Modelling and analysis of extracellular action potentials. In Journal of Computational Neuroscience, 2019. [under review]
+ H. Tran, S. Le Cam, R. Ranta and V. Louis-Dorr. Fast simulation of extracellular action potential signatures based on a morphological filtering approximation. In Journal of Computational Neuroscience, 2019. [under review]
  
  H. Tran, R. Ranta, S. Le Cam and V. Louis-Dorr. Extracellular recordings simulation : a time-efficient method to model action potentials signatures of neuronal populations. In the NeuroFrance, Marseille, France, 2019.
    
