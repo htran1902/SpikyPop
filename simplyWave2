@@ -1,6 +1,6 @@
 function [Ve] = simplyWave2(Imem,c,morpho,t,hk,coef,dt,coef_soma)
 
-% Function which processes the EAP waveform for a specific electrode position (represented by the variable hk which the morphological filter)
+% Function which processes the EAP waveform for a specific electrode position (represented by the variable hk which is the morphological filter)
 % with specific parameters (propagation speed 'c', soma dipole coefficient 'coef_soma')
 % created by harry tran
 
