@@ -1,0 +1,88 @@
+clear all
+close all
+clc
+
+% if computer display resolution issue ----->  opengl('save','hardware')
+
+% import data from LFPy and Python
+position_electrode= importdata('xyz_electrodes.text');
+position_electrode=cell2mat(cellfun(@str2num,position_electrode,'UniformOutput',0));
+position_electrode(:,1) = - position_electrode(:,1);
+lfpy = importdata('NAME_DATA_SAVED.text');
+lfpy=lfpy';
+
+%%
+clc
+D = sqrt(sum(position_electrode'.^2));
+D = D'; % distance from the soma;
+[~, idxMin] = min(D);
+
+hodgkin_huxley_dynamics
+
+lfpy_norm = lfpy-lfpy(:,1)*ones(1,size(lfpy,2));
+normtmp=sqrt(sum(lfpy_norm.^2,2));
+lfpy_norm=lfpy_norm/normtmp(idxMin); % normalize with the closest electrode idx from the soma
+
+morpho.soma.radius = 12.5;     % um
+morpho.axon.cptLength = 13.3335; % um
+morpho.axon.radius = 1;        % um
+morpho.axon.surface = 2*pi*morpho.axon.radius*morpho.axon.cptLength ; % um2
+morpho.axon.length = 1000;     % um
+morpho.axon.x = [morpho.soma.radius + morpho.axon.cptLength/2:morpho.axon.cptLength:morpho.axon.length + morpho.soma.radius];
+morpho.axon.cptNumber = length(morpho.axon.x);
+morpho.soma.surface = 4*pi*morpho.soma.radius^2;
+
+%%
+
+c=446;
+coef_soma = 1;
+
+clc
+clear data_corr
+clear tmp correlation
+tic
+
+hk2 = [];
+data_corr=cell(length(position_electrode),1);
+
+for idx = 1:length(position_electrode)
+    
+    xe = position_electrode(idx,1);
+    ye = position_electrode(idx,2);
+    
+    % to simplify the formula
+    coef_distance = (4*pi*3*10^(-1)*((xe-morpho.soma.radius).^2+ye^2).^(3/2));
+    coef_unit = morpho.soma.surface/35000; %3.5N
+    coef_momentDipol = morpho.axon.cptLength*(xe-morpho.soma.radius);
+    coef = [coef_momentDipol coef_unit coef_distance]; % to simplify the formula
+    
+    % filter processing
+    hk2(idx,:)=morpho.axon.cptLength*(xe-morpho.axon.x)./(4*pi*3*10^(-1)*((xe-morpho.axon.x ).^2+ye^2).^(3/2))*morpho.axon.surface/35000; % units hk : 10^3*ohm*cm2
+    
+end
+
+for idx_speed = 1:length(c)
+    for idx_soma = 1:length(coef_soma)
+        Ve=zeros(size(lfpy));
+        parfor idx = 1:length(position_electrode)
+            Vetmp = simplyWave2(Imem,c(idx_speed),morpho,t,hk2(idx,:),coef,dt,coef_soma(idx_soma));
+            Vetmp = Vetmp(time_extraction_mat);
+            Ve(idx,:)=Vetmp-Vetmp(1);
+            normVe(idx)=norm(Ve(idx,:));
+        end
+        
+        matrice_Ve{idx_speed,idx_soma} = Ve;
+        normmax=normVe(4);
+        Ve=Ve/normmax;
+        
+        % ici checker correlation valeurs + sens des waveforms
+        % correlation
+        tmp = corrcoef(-Ve,lfpy);
+        correlation(idx_speed,idx_soma) = tmp(1,2);
+        
+        % error processing
+        error(idx_speed,idx_soma) = norm(-Ve-lfpy_norm,'fro');
+    end
+    fprintf('Processed for speed %d  \n',c(idx_speed))
+end
+toc
