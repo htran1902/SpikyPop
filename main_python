@@ -1,0 +1,228 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import LFPy
+import numpy as np
+import matplotlib.pyplot as plt
+import pylab as pl
+from matplotlib.collections import PolyCollection
+
+from neuron import h
+#plt.close("all")
+#from math import sqrt
+# to display all the values of an array
+np.set_printoptions(threshold=np.nan) 
+import time
+
+# based on : 
+# A Modified Cable Formalism for Modeling Neuronal Membranes at High Frequencies / Bedard / Destexhe
+# created in February 2018 
+# last modified : August 2019
+
+# --------------------------------------------------
+# we defne useful functions :
+
+def PolyArea(x,y):
+    return 0.5*np.abs(np.dot(x,np.roll(y,1))-np.dot(y,np.roll(x,1)))
+
+def plotstuff(cell, electrode):
+    '''plotting'''
+    fig = plt.figure()
+    plt.plot(electrode.x, electrode.y,'.',  marker='o', markersize=3, color='r',zorder=0)
+#    rotation = {'x' : 0, 'y' : math.pi, 'z' : 0} #-math.pi/9 # Mainen
+#    cell.set_rotation(**rotation) 
+# Plot neuron morphology
+    zips=[]
+    for x, y in cell.get_idx_polygons(projection=('x', 'y')):
+        #### PATCH Radu do not plot big boxes
+#        tmp=list(zip(x,y))
+#        if not 250 in tmp[1]:
+        if PolyArea(x,y)<10000:
+            zips.append(list(zip(x, y)))
+        ##### END PATCH
+    polycol = PolyCollection(zips,edgecolors='k',facecolors='k')
+    ax = fig.add_subplot(111)
+    ax.add_collection(polycol)
+    ax.axis(ax.axis('equal'))
+    plt.xlabel('Distance $\mu$m - (Ox)')
+    plt.ylabel('Distance $\mu$m - (0y) ')
+
+    plt.grid(True)
+#    plt.title(r'$Neuron$ $Morphology$')   
+    return fig
+
+#def butter_bandpass(lowcut, highcut, fs, order=5):
+#    nyq = 0.5*fs
+#    low = lowcut/nyq
+#    high = highcut/nyq
+#    b,a = butter(order,[low, high],btype='band')
+#    return b, a
+#    
+#def butter_bandpass_filter(signal, lowcut, highcut, fs, order=4):
+#    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+#    y = lfilter(b,a,signal)
+#    return y
+
+# ATTENTION : YOU MAY NEED TO CHANGE THE SAVING PATH HERE 
+def saveXmem(data,filename):
+    path = '/home/chercheur/code_lfpy/aout_2019'
+    filename = os.path.join(path, filename)
+    np.savetxt(filename+'.text',data)
+
+# save list
+def save(filename, data):
+    path = '/home/chercheur/code_lfpy/aout_2019'
+    filename = os.path.join(path, filename)
+    thefile = open(filename+'.text','w')      
+    for i in data:
+        thefile.write("%s\n" % i)
+
+def minimum_value_index(data):
+    minimum = min(data)
+    min_index = np.argmin(data)
+    print('Minimum value : %s' %minimum)
+    print('Minimum index : %s' %min_index)
+    return minimum, min_index
+
+def mgrid2xyz(elec1):
+    x = elec1['x']
+    y = elec1['y']
+    z = elec1['z']
+    positionXYZ = [x, y, z]
+    return positionXYZ
+
+# 0-matrix of size (n)
+def zerolistmaker(n):
+    listofzeros = [0] * n
+    return listofzeros
+
+
+# =============================================================================
+# ================================= MORPHOLOGY ================================
+# =============================================================================
+
+dt=0.001
+fe=1/dt
+
+cell_parameters = {                          
+     'morphology' : '/home/chercheur/code_lfpy/aout_2019/ballstick_avec_dendrite.hoc', 
+     'rm' : 3000,
+     'v_init' : -65,
+     'passive' : True,
+     'cm' : 1.0,
+     'nsegs_method' : 'lambda_f',
+     'd_lambda' : 0.02,  # 0.02 pour 2 um
+     'e_pas' : -65,
+     'tstartms' : 0,
+     'tstopms' : 100,
+}
+cell = LFPy.Cell(**cell_parameters)
+print("Morphology imported")
+                               
+stimulation = {
+        'idx' : cell.get_closest_idx(x=0,y=0,z=0),
+        'record_current' : True,
+        'pptype' : 'IClamp',
+        'amp' : 0.15, #0.15 avec les deux dendrites
+        'dur' : 25, #0.01
+        'delay' : 5, #5
+},
+
+
+# meshgrid
+hstep = np.array(range(250,-1251,-125))
+vstep = np.array(range(50,251,50))
+N = vstep.shape
+
+x_elec = np.tile(hstep, N)
+y_elec = np.tile(vstep, N)
+y_elec = [None]*x_elec.size
+
+for i in range(0,x_elec.size):
+    if i>=0 and i<=12:
+        y_elec[i]=50
+    elif i>=13 and i<=25:
+        y_elec[i] = 100
+    elif i>=26 and i<=38:
+        y_elec[i] = 150
+    elif i>=39 and i<=51:
+        y_elec[i] = 200            
+    elif i>=52 and i<=64:
+        y_elec[i] = 250
+              
+z_elec = np.zeros(x_elec.shape)
+
+
+meshgrid = {
+        'sigma':0.3,
+        'x': x_elec,
+        'y': y_elec, 
+        'z': z_elec,
+}
+
+
+position_electrode = (meshgrid['x'], meshgrid['y'])
+
+## Pour un ball stick
+for stim in stimulation:
+    cell = LFPy.Cell(**cell_parameters)
+   # cell = LFPy.Cell(morphology='/home/chercheur/code_lfpy/aout_2019/ballstick_avec_dendrite.hoc')
+    LFPy.StimIntElectrode(cell, **stim)
+    cell.simulate(rec_vmem=True, rec_imem=True,rec_istim=True) 
+
+# Electrodes initialization
+meshgrid_electrodes = LFPy.RecExtElectrode(cell, **meshgrid)  
+
+plotstuff(cell,meshgrid_electrodes)
+
+# conversion into array
+y_elec = np.asarray(y_elec)
+xyz_mesh = np.stack((x_elec, y_elec,z_elec), axis=1)
+meshgrid_electrodes.calc_lfp()
+
+# window size of extraction (ms)
+begin = 4
+ends = 6
+
+# we get the index of max(Vm) / membrane potential
+Vm = cell.somav
+maxIndex = np.argmax(Vm)
+extract_begin = maxIndex - begin*fe  # index begin extraction
+extract_end = maxIndex + ends*fe    # index end extraction
+extract_begin_ms = round(cell.tvec[extract_begin.astype(np.int64)],3)
+#cell.tvec[maxIndex]
+extract_end_ms = cell.tvec[extract_end.astype(np.int64)]
+
+#  time of the stimulation windowed
+timeind = (cell.tvec >= extract_begin_ms) & (cell.tvec <= extract_end_ms)  
+
+# We plot the EAPs waveforms (not mandatory)
+fig = plt.figure()
+# ================= SOMA PLOT =================================================
+plt.subplot(211)
+plt.plot(cell.tvec[timeind], cell.somav[timeind],lw=1)
+plt.axis('tight') 
+plt.title(r'Action potential')
+plt.ylabel(r'$Amplitude$ (mV)', va='center')
+plt.grid(True)
+# ================= ELECTRODE LFP  ============================================
+plt.subplot(212)
+plt.plot(cell.tvec[timeind], meshgrid_electrodes.LFP.T[timeind],lw=1)
+plt.show()
+plt.grid(True)
+plt.legend(loc='best')
+plt.title('Set electrode 1',color='r')
+plt.xlabel('time (ms)')
+
+print("done")
+
+
+### ------------------ Data savings -------------------------------------------
+#saveXmem(meshgrid_electrodes.LFP.T[timeind],"NAME_DATA_SAVED")  # Change here the name of the data saved
+#saveXmem(cell.somav[timeind],'vm_lfpy')
+#saveXmem(Imem_soma,"soma_current")
+##save("Stim",stimulus.i)
+#save("xyz_electrodes", xyz_mesh)
+#saveXmem(cell.tvec[timeind],"cell_tvec")
+#print("done")
