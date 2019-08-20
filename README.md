@@ -23,11 +23,10 @@ It is recommended to run the different files under Ubuntu/Debian/MacOS - especia
 
 1/ Modify the .hoc file to choose the neuron morphology.
 
-2/ Import the .hoc file in the LFPy python-package (for installation, see https://github.com/LFPy/LFPy) and save the different data (EAPs).
+2/ Import the .hoc file in the LFPy python-package and run the main python file (for LFPy installation, see https://github.com/LFPy/LFPy) and save the different data (EAPs).
 
-3/ Import the saved data in matlab and run the main file (don't forget to modify the morphology parameters to match with the ones of the .hoc file)
+3/ Import the saved data in matlab and run the main matlab file (don't forget to modify the morphology parameters to match with the ones of the .hoc file)
 
-**** Step for reproducing EAPs from neuronal population :
 
 
 
