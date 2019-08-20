@@ -35,7 +35,13 @@ ballstick_dendrite.hoc : NEURON file which creates the neuron morphology (with/w
 
 hhrun.m : matlab file which reproduces the Hodgkin-Huxley dynamics.
 
+Hodgkin_Huxley_dynamics : matlab file which generates the somatic membrane current for a specific stimulation current. 
+
 main_python.py : Python file using LFPy which processes the EAPs for different electrode positions (to define according to the user).
+
+main_matlab.m : main matlab file which computes the EAPs waveforms using the morphological filtering method.
+
+simplyWave2.m : matlab file which processes the EAP waveforms for specific parameters (morphology, soma dipole coefficient...)
 
 #
 
