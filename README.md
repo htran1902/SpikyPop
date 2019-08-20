@@ -29,7 +29,13 @@ It is recommended to run the different files under Ubuntu/Debian/MacOS - especia
 
 
 
+# List of the different files 
 
+ballstick_dendrite.hoc : NEURON file which creates the neuron morphology (with/without dendrite, axon diameter/length, soma diameter/length).
+
+hhrun.m : matlab file which reproduces the Hodgkin-Huxley dynamics.
+
+main_python.py : Python file using LFPy which processes the EAPs for different electrode positions (to define according to the user).
 
 #
 
