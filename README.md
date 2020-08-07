@@ -47,4 +47,4 @@ simplyWave2.m : matlab file which processes the EAP waveforms for specific param
 
 The method was developed within the team of 'Neurosciences des systèmes et de la cognition' belonging to the CRAN - Centre of Research in Automatic of Nancy - Nancy, France.
 
-If you have any questions concerning the method, please send en email to harry.tran@univ-lorraine.fr
+If you have any questions concerning the method, please send en email to htran@umn.edu
